@@ -1,0 +1,23 @@
+services:
+  reports:
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    container_name: abcall-reports-local-api
+    restart: always
+    volumes:
+      - ".:/app"
+    ports:
+      - "5008:3008"
+    env_file:
+      - .env.local
+    tty: true
+    networks:
+      - reports_net
+      - app_net
+      
+  
+networks:
+  reports_net:
+    name: reports_net
+    driver: bridge
