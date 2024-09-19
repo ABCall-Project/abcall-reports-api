@@ -11,3 +11,5 @@ else:
 class Config:
     ENVIRONMENT = environment
     APP_NAME=os.getenv('APP_NAME')
+    CONTAINER_STORAGE=os.getenv('CONTAINER_STORAGE')
+    CONNECTION_STRING_STORAGE=os.getenv('CONNECTION_STRING_STORAGE')
