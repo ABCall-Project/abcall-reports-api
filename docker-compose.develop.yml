@@ -10,7 +10,7 @@ services:
     ports:
       - "5008:3008"
     env_file:
-      - .env.local
+      - .env
     tty: true
     networks:
       - reports_net
