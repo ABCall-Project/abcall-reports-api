@@ -40,8 +40,8 @@ class ReportService:
 
     def upload_invoice_to_storage(self,local_file):
         config = Config()
-        connection_string = Config.CONNECTION_STRING_STORAGE #"DefaultEndpointsProtocol=https;AccountName=abcallstorage;AccountKey=sYcvU0A8NNajwyzkx/Z8vsVQ9h8OCe9F+NYRKp2CWcUbH1uKCUhxfU+jMGATU3jtQHM1QuJafbcT+ASta3TjmQ==;EndpointSuffix=core.windows.net"  
-        container_name = Config.CONTAINER_STORAGE # "invoices"
+        connection_string = Config.CONNECTION_STRING_STORAGE 
+        container_name = Config.CONTAINER_STORAGE 
         blob_service_client = BlobServiceClient.from_connection_string(connection_string)
         container_client = blob_service_client.get_container_client(container_name)
         
