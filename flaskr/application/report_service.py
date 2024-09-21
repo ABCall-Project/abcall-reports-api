@@ -6,8 +6,15 @@ from  config import Config
 import os
 
 class ReportService:
-    def create_invoice(self,invoice: Invoice ):
-
+    """
+    This class is to generate reports for platform
+    """
+    def create_invoice(self,invoice: Invoice):
+        """
+        method to create a invoice document in pdf format
+        Args:
+            invoice (Invoice): invoice data object            
+        """
         invoice_file=f'generated/invoice-{invoice.invoice_id}.pdf'
         c = canvas.Canvas(invoice_file, pagesize=letter)
         weight, high = letter
@@ -38,8 +45,12 @@ class ReportService:
 
 
 
-    def upload_invoice_to_storage(self,local_file):
-        config = Config()
+    def __upload_invoice_to_storage(self,local_file):
+        """
+        method to send a document to  storage
+        Args:
+            local_file (str): file to send to storage
+        """
         connection_string = Config.CONNECTION_STRING_STORAGE 
         container_name = Config.CONTAINER_STORAGE 
         blob_service_client = BlobServiceClient.from_connection_string(connection_string)
@@ -48,6 +59,23 @@ class ReportService:
         with open(local_file, "rb") as data:
             blob_client = container_client.get_blob_client(blob=local_file)
             blob_client.upload_blob(data, overwrite=True)
+
+
+    def download_invoice_from_storage(self, invoice_id):
+        """
+        method to download a document from  storage
+        Args:
+            file (str): file to download from 
+        """
+        try:
+            file=f'generated/invoice-{invoice_id}.pdf'
+            blob_service_client = BlobServiceClient.from_connection_string(Config.CONNECTION_STRING_STORAGE)
+            blob_client = blob_service_client.get_blob_client(container=Config.CONTAINER_STORAGE , blob=file)
+            blob_data = blob_client.download_blob()
+            return blob_data.readall()
+        except Exception as ex:
+                return None
+
 
         
 

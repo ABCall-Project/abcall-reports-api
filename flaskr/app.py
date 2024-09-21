@@ -30,4 +30,4 @@ api = Api(app)
 
 #resources
 api.add_resource(HealthCheck, '/health')
-api.add_resource(InvoiceReport, '/invoice')
+api.add_resource(InvoiceReport, '/invoice','/invoice/<string:invoice_id>')

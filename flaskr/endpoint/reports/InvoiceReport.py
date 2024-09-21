@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import jsonify, request
+from flask import jsonify, request,Response
 import requests
 from http import HTTPStatus
 from  config import Config
@@ -13,7 +13,13 @@ from ...utils import Logger
 log = Logger()
 
 class InvoiceReport(Resource):
+    """
+    This class represent to invoce report api
+    """
     def post(self):
+        """
+        api method to create a invoice document in pdf format      
+        """
         try:
             invoice_id=uuid.UUID(request.json["id"])
             log.info(f'Receive request to generate invoice {request.json["id"]}')
@@ -38,3 +44,28 @@ class InvoiceReport(Resource):
         except Exception as ex:
             log.error(f'Some error occurred trying to generated invoice {invoice_id}: {ex}')
             return {'message': 'Something was wrong trying generate invoice'}, HTTPStatus.INTERNAL_SERVER_ERROR
+        
+
+    def get(self,invoice_id):
+        """
+        api method to download a invoice document from storage
+        Args:
+            file (str): file to download from storage
+        """
+        try:
+            report_service= ReportService()
+            invoice =report_service.download_invoice_from_storage(invoice_id)
+            if invoice:
+                response = Response(invoice, mimetype='application/octet-stream')
+
+                response.headers.set('Content-Disposition', 'attachment', filename=f'invoice-{invoice_id}.pdf')
+
+                return response
+            else:
+                return 'Invoice not found', HTTPStatus.NOT_FOUND
+        except Exception as ex:
+            log.error(f'Some error occurred trying to download invoice {invoice_id}: {ex}')
+            return {'message': 'Something was wrong trying download invoice'}, HTTPStatus.INTERNAL_SERVER_ERROR
+        
+        
+        
