@@ -1,0 +1,65 @@
+###################################
+# abcall-payment-api
+###################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: abcall-reports-api
+  labels:
+    app: abcall-reports-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: abcall-reports-api
+  template:
+    metadata:
+      labels:
+        app: abcall-reports-api
+    spec:
+      containers:
+        - name:  abcall-reports-api
+          image: abcall.azurecr.io/abcall-reports-api:1.0.0
+          env:
+            - name: "FLASK_APP"
+              valueFrom:
+                configMapKeyRef:
+                  name: reports-configmap
+                  key: FLASK_APP
+            - name: "FLASK_ENV"
+              valueFrom:
+                configMapKeyRef:
+                  name: reports-configmap
+                  key: FLASK_ENV
+            - name: "APP_NAME"
+              valueFrom:
+                configMapKeyRef:
+                  name: reports-configmap
+                  key: APP_NAME
+            - name: "CONTAINER_STORAGE"
+              valueFrom:
+                configMapKeyRef:
+                  name: reports-configmap
+                  key: CONTAINER_STORAGE
+            - name: "CONNECTION_STRING_STORAGE"
+              valueFrom:
+                secretKeyRef:
+                  name: reports-secrets
+                  key: CONNECTION_STRING_STORAGE
+          ports:
+            - containerPort: 3008
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: abcall-reports-api-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: abcall-reports-api
+  ports:
+    - protocol: TCP
+      port: 3008
+      targetPort: 3008

@@ -3,8 +3,10 @@ FROM python:alpine3.11 AS python-base
 WORKDIR /app
 
 RUN apk add --no-cache \
+    zlib-dev \
     gcc \
     musl-dev \
+    jpeg-dev \
     linux-headers \
     libffi-dev \
     nginx \
