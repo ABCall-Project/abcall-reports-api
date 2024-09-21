@@ -8,13 +8,12 @@ services:
     volumes:
       - ".:/app"
     ports:
-      - "5008:3008"
+      - "3008:3008"
     env_file:
       - .env
     tty: true
     networks:
       - reports_net
-      - app_net
       
   
 networks:
