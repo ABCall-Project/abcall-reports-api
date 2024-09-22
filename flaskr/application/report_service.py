@@ -38,7 +38,7 @@ class ReportService:
         
         c.save()
 
-        self.upload_invoice_to_storage(invoice_file)
+        self.__upload_invoice_to_storage(invoice_file)
 
         if os.path.exists(f'generated/invoice-{invoice.invoice_id}.pdf'):
             os.remove(f'generated/invoice-{invoice.invoice_id}.pdf')

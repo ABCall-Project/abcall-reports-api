@@ -14,9 +14,13 @@ services:
     tty: true
     networks:
       - reports_net
+      - app_net
       
   
 networks:
   reports_net:
     name: reports_net
+    driver: bridge
+  app_net:
+    name: app_net
     driver: bridge
