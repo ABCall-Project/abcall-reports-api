@@ -6,6 +6,7 @@ on:
 jobs:
   tests:
     name: Tests
+    if: github.base_ref == 'develop'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout de repositorio
@@ -44,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Merge ${{ github.ref }} -> develop
-      if: success() && github.event.pull_request.merged == true && (github.head_ref == 'feature/*' || github.head_ref == 'hotfix/*' || github.head_ref == 'release/*' || github.head_ref == 'bugfix/*')
+      if: success() && github.event.pull_request.merged == true && github.base_ref == 'develop' && (github.head_ref == 'feature/*' || github.head_ref == 'hotfix/*' || github.head_ref == 'release/*' || github.head_ref == 'bugfix/*')
       uses: tukasz/direct-merge-action@master
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
