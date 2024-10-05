@@ -4,51 +4,10 @@ on:
       types:
         - closed
 jobs:
-  release:
-    name: Release branch
-    runs-on: ubuntu-latest
-    steps:
-    - name: Release
-      uses: actions/checkout@v2
-      with:
-        source-branch: develop
-        fetch-depth: 0
-    - name: Initialize git
-      run: git init
-      if: success() && github.event.pull_request.merged == true && (github.head_ref == 'feature/*' || github.head_ref == 'hotfix/*' || github.head_ref == 'release/*' || github.head_ref == 'bugfix/*')
-    - name: Initialize mandatory git config
-      run: |
-        git config user.name "GitHub Actions"
-        git config user.email noreply@github.com
-    - name: Initialize mandatory git config
-      run: |
-        git pull
-    - name: Create release branch
-      run: |
-        git fetch --all
-        git pull
-        git checkout -b release/release-$GITHUB_RUN_NUMBER
-        git push --set-upstream origin release/release-$GITHUB_RUN_NUMBER
-    - name: Push new branch
-      run: git push --tags
-  
-  merge:
-    name: Merge
-    runs-on: ubuntu-latest
-    needs: release
-    steps:
-      - name: Mezcla release/release-${{ github.run_number }} -> main
-        if: ${{ success() }}
-        uses: tukasz/direct-merge-action@master
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          target-branch: release/release-${{ github.run_number }}
-          source-branch: develop
-
   tests:
     name: Tests
+    if: success() && github.event.pull_request.merged == true && github.head_ref == 'develop'
     runs-on: ubuntu-latest
-    needs: merge
     steps:
     - name: Checkout de repositorio
       uses: actions/checkout@v2
@@ -80,16 +39,3 @@ jobs:
       id: Coverage
       run: |
         make run-tests-coverage
-
-  merge-from-main:
-    name: Merge to main
-    runs-on: ubuntu-latest
-    needs: tests
-    steps:
-      - name: Mezcla release/release-${{ github.run_number }} -> main
-        if: ${{ success() }}
-        uses: tukasz/direct-merge-action@master
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          target-branch: main
-          source-branch: release/release-${{ github.run_number }}
