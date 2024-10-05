@@ -1,0 +1,28 @@
+###################################
+# INGRESS
+###################################
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: abcall-reports-ingress
+  labels:
+    name:  abcall-reports-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: abcall-reports-api-service
+            port: 
+              number: 3008
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: abcall-reports-api-service
+            port: 
+              number: 3008

@@ -1,0 +1,10 @@
+.env
+venv
+__pycache__
+data
+.DS_Store
+k8s-secrets.yaml
+*.pdf
+reports
+.coverage
+htmlcov
