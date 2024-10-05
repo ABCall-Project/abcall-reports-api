@@ -1,0 +1,95 @@
+name: Release
+on:
+    pull_request:
+      types:
+        - closed
+jobs:
+  release:
+    name: Release branch
+    runs-on: ubuntu-latest
+    steps:
+    - name: Release
+      uses: actions/checkout@v2
+      with:
+        source-branch: develop
+        fetch-depth: 0
+    - name: Initialize git
+      run: git init
+      if: success() && github.event.pull_request.merged == true && (github.head_ref == 'feature/*' || github.head_ref == 'hotfix/*' || github.head_ref == 'release/*' || github.head_ref == 'bugfix/*')
+    - name: Initialize mandatory git config
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email noreply@github.com
+    - name: Initialize mandatory git config
+      run: |
+        git pull
+    - name: Create release branch
+      run: |
+        git fetch --all
+        git pull
+        git checkout -b release/release-$GITHUB_RUN_NUMBER
+        git push --set-upstream origin release/release-$GITHUB_RUN_NUMBER
+    - name: Push new branch
+      run: git push --tags
+  
+  merge:
+    name: Merge
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Mezcla release/release-${{ github.run_number }} -> main
+        if: ${{ success() }}
+        uses: tukasz/direct-merge-action@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          target-branch: release/release-${{ github.run_number }}
+          source-branch: develop
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: merge
+    steps:
+    - name: Checkout de repositorio
+      uses: actions/checkout@v2
+    - name: Environment configuration
+      uses: actions/setup-python@v2
+      with:
+          python-version: '3.9'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip 
+        pip install -r requirements.txt
+    - name: Running tests 🧪
+      id: test-running-id
+      run: |
+        make run-tests
+      env:
+        FLASK_ENV: test
+    - name: Validate results with errors
+      if: ${{ failure() }}
+      env:
+        ERROR_MESSAGE: One or various test failed 🔴
+      run: echo "::set-output name=answer::${ERROR_MESSAGE}"
+    - name: Validate result without errors
+      if: ${{ success() }}
+      env:
+        MESSAGE_SUCCESS: All the tests were success
+      run: echo "::set-output name=answer::${MESSAGE_SUCCESS}"
+    - name: Coverage calculation 📊
+      id: Coverage
+      run: |
+        make run-tests-coverage
+
+  merge-from-main:
+    name: Merge to main
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - name: Mezcla release/release-${{ github.run_number }} -> main
+        if: ${{ success() }}
+        uses: tukasz/direct-merge-action@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          target-branch: master
+          source-branch: release/release-${{ github.run_number }}
