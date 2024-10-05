@@ -91,5 +91,5 @@ jobs:
         uses: tukasz/direct-merge-action@master
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          target-branch: master
+          target-branch: main
           source-branch: release/release-${{ github.run_number }}
