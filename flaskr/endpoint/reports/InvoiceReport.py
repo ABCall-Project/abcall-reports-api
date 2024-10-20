@@ -24,20 +24,21 @@ class InvoiceReport(Resource):
             invoice_id=uuid.UUID(request.json["id"])
             log.info(f'Receive request to generate invoice {request.json["id"]}')
             report_service= ReportService()
+
+
+             
             invoice=Invoice(invoice_id,
                             uuid.UUID(request.json["customer_id"]),
                             request.json["invoice_id"],
-                            uuid.UUID(request.json["payment_id"]),
+                            uuid.UUID(request.json["plan_id"]),
                             float(request.json["amount"]),
                             float(request.json["tax"]),
                             float(request.json["total_amount"]),
-                            request.json["subscription"],
-                            uuid.UUID(request.json["subscription_id"]),
                             request.json["status"],
                             request.json["created_at"],
-                            request.json["updated_at"],
+                            request.json["start_at"],
                             request.json["generation_date"],
-                            request.json["period"])
+                            request.json["end_at"])
             report_service.create_invoice(invoice)
             log.info(f'Invoice {id} generated')
             return 'Invoice generated', HTTPStatus.OK
