@@ -42,6 +42,7 @@ jobs:
   docker-build:
     name: Build
     runs-on: ubuntu-latest
+    needs: tests
     steps:
     - name: Checkout de repositorio
       uses: actions/checkout@v2
