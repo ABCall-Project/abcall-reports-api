@@ -7,6 +7,8 @@ from config import Config
 from .endpoint import HealthCheck,InvoiceReport
 import signal
 import logging
+import newrelic.agent
+newrelic.agent.initialize('newrelic.ini')
 
 config = Config()
 
@@ -15,6 +17,7 @@ app = create_app('default')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('default')
 app.json_encoder = JSONCustomEncoder
+logger.info('starting application ...')
 
 def before_server_stop(*args, **kwargs):
     logger.info('Closing application ...')
